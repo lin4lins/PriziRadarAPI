@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 CLIENT_ID = os.environ.get("CLIENT_ID")
 CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
-MAIN_URL = "http://0.0.0.0:8000"
+MAIN_URL = "http://localhost:8000"
 
 
 def get_facebook_oauth_url() -> str:
@@ -15,7 +15,7 @@ def get_facebook_oauth_url() -> str:
         "client_id": CLIENT_ID,
         "scope": "openid",
         "response_type": "code",
-        "redirect_uri": f"{MAIN_URL}{reverse('login-completed')}",
+        "redirect_uri": f"{MAIN_URL}{reverse('auth')}",
     }
     return f"{facebook_oauth_url}?{'&'.join([f'{key}={value}' for key, value in params.items()])}"
 
@@ -25,7 +25,7 @@ def get_facebook_token_url(authorization_code: str) -> str:
     params = {
         "client_id": CLIENT_ID,
         "client_secret":  CLIENT_SECRET,
-        "redirect_uri": f"{MAIN_URL}{reverse('login-completed')}",
+        "redirect_uri": f"{MAIN_URL}{reverse('auth')}",
         "code": authorization_code
     }
     return f"{facebook_token_url}?{'&'.join([f'{key}={value}' for key, value in params.items()])}"
