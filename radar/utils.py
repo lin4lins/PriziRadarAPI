@@ -29,3 +29,13 @@ def get_facebook_token_url(authorization_code: str) -> str:
         "code": authorization_code
     }
     return f"{facebook_token_url}?{'&'.join([f'{key}={value}' for key, value in params.items()])}"
+
+
+def get_facebook_accounts_url(user_ig_token: str) -> str:
+    facebook_accounts_url = "https://graph.facebook.com/v17.0/me/accounts"
+    params = {
+        "fields": "instagram_business_account",
+        "access_token": user_ig_token,
+    }
+    return f"{facebook_accounts_url}?{'&'.join([f'{key}={value}' for key, value in params.items()])}"
+
