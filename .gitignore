@@ -3,3 +3,4 @@ venv
 data
 .idea
 radar.log
+radar/migrations/*
