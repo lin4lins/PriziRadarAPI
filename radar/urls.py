@@ -1,7 +1,7 @@
-from django.urls import path
+from rest_framework.routers import DefaultRouter
 
-from radar.views.login import AuthorizationView
+from radar import views
 
-urlpatterns = [
-    path('', AuthorizationView.as_view(), name='auth'),
-]
+router = DefaultRouter()
+router.register(r'user', views.UserViewSet, basename="user")
+urlpatterns = router.urls
