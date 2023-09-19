@@ -6,7 +6,7 @@ from radar.models import User, InstagramAccount
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ['last_login', 'id']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
