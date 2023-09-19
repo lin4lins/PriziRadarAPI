@@ -18,6 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class InstagramAccountSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only = True)
+
     class Meta:
         model = InstagramAccount
-        fields = '__all__'
+        fields = ['id', 'access_token', 'last_login']

@@ -3,8 +3,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.generics import RetrieveAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from radar.models import User
-from radar.serialzers import UserSerializer
+from radar.serialzers import UserSerializer, InstagramAccountSerializer
 
 
 class UserCreateView(CreateAPIView):
