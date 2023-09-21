@@ -1,11 +1,13 @@
 from django.http import JsonResponse
 from rest_framework import viewsets, status
 from rest_framework.authtoken.models import Token
+from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
 
-from radar.models import User, InstagramAccount
-from radar.serialzers import UserSerializer, InstagramAccountSerializer
+from radar.models import User, InstagramAccount, InstagramPost
+from radar.serialzers import UserSerializer, InstagramAccountSerializer, InstagramPostSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -27,6 +29,11 @@ class UserViewSet(viewsets.ModelViewSet):
         token, created = Token.objects.get_or_create(user = serializer.instance)
         return JsonResponse({"token": token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
 
+    @action(detail = False, methods = ['get'])
+    def me(self, request):
+        serializer = self.get_serializer(request.user)
+        return JsonResponse(serializer.data)
+
     def list(self, request, *args, **kwargs):
         raise MethodNotAllowed('GET')
 
@@ -42,4 +49,19 @@ class InstagramAccountViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
-        raise MethodNotAllowed('GET')
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class InstagramPostViewSet(viewsets.ModelViewSet):
+    queryset = InstagramPost.objects.all()
+    serializer_class = InstagramPostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return self.queryset.filter(ig_account__user=user)
+
+    def perform_create(self, serializer):
+        serializer.save(ig_account=self.request.user.ig_account)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from radar.models import User, InstagramAccount
+from radar.models import User, InstagramAccount, InstagramPost
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,5 +22,12 @@ class InstagramAccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InstagramAccount
-        fields = ['id', 'ig_id', 'access_token', 'last_login']
+        exclude = ['user']
         read_only_fields = ["ig_id", "user"]
+
+
+class InstagramPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InstagramPost
+        exclude = ['ig_account']
+        read_only_fields = ['ig_id', 'shortcode', 'ig_account']
