@@ -1,14 +1,15 @@
 from django.http import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import MethodNotAllowed
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from radar.models import User, InstagramAccount, InstagramPost
-from radar.serialzers import UserSerializer, InstagramAccountSerializer, InstagramPostSerializer
+from radar.models import InstagramAccount, InstagramPost, User
+from radar.serialzers import (InstagramAccountSerializer,
+                              InstagramPostSerializer, UserSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -24,11 +25,15 @@ class UserViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated()]
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data = request.data)
-        serializer.is_valid(raise_exception = True)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        token, created = Token.objects.get_or_create(user = serializer.instance)
-        return JsonResponse({"token": token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
+        token, created = Token.objects.get_or_create(user=serializer.instance)
+        return JsonResponse({
+            "token": token.key,
+            'user': serializer.data
+        },
+                            status=status.HTTP_201_CREATED)
 
     def list(self, request, *args, **kwargs):
         raise MethodNotAllowed('GET')
@@ -65,12 +70,12 @@ class InstagramPostViewSet(viewsets.ModelViewSet):
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Your API",
+        title="PriziRadarAPI",
         default_version='v1',
-        description="Description of your API",
+        description="Descriptin",
         terms_of_service="https://www.yourapp.com/terms/",
-        contact=openapi.Contact(email="contact@yourapp.com"),
-        license=openapi.License(name="Your License"),
+        contact=openapi.Contact(email="elina.vl.shramko@ygmail.com"),
+        license=openapi.License(name="Elina Shramko"),
     ),
     public=True,
     permission_classes=[AllowAny],

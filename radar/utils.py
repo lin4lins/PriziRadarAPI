@@ -8,7 +8,8 @@ QUERY_HASH = "eaffee8f3c9c089c9904a5915a898814"
 
 def build_url(base_url, params):
     """Build a URL with parameters."""
-    param_string = '&'.join([f'{key}={value}' for key, value in params.items()])
+    param_string = '&'.join(
+        [f'{key}={value}' for key, value in params.items()])
     return f"{base_url}?{param_string}"
 
 
@@ -21,13 +22,11 @@ def get_ig_business_accounts_url(user_ig_token: str) -> str:
     return build_url(ACCOUNTS_URL, params)
 
 
-def generate_instagram_media_url(user_ig_token: str, ig_account_id: str) -> str:
+def generate_instagram_media_url(user_ig_token: str,
+                                 ig_account_id: str) -> str:
     instagram_media_url = f"{FACEBOOK_API_BASE_URL}/{ig_account_id}/media"
     """Generate the Instagram media URL for a specific account."""
-    params = {
-        "fields": "ig_id",
-        "access_token": user_ig_token
-    }
+    params = {"fields": "ig_id", "access_token": user_ig_token}
     return build_url(instagram_media_url, params)
 
 
@@ -48,7 +47,8 @@ def get_post_old_ig_id(shortcode: str) -> str:
     return data_dict['data']['shortcode_media']['id']
 
 
-def get_post_ig_id(ig_account_id: str, access_token: str, shortcode: str) -> str:
+def get_post_ig_id(ig_account_id: str, access_token: str,
+                   shortcode: str) -> str:
     """Get the new post ID by old version ID."""
     old_version_id = get_post_old_ig_id(shortcode)
     url = generate_instagram_media_url(access_token, ig_account_id)

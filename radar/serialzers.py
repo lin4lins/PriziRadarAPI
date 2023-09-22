@@ -1,9 +1,10 @@
 from rest_framework import serializers
 
-from radar.models import User, InstagramAccount, InstagramPost
+from radar.models import InstagramAccount, InstagramPost, User
 
 
 class UserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
         fields = '__all__'
@@ -18,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class InstagramAccountSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(read_only = True)
+    id = serializers.CharField(read_only=True)
 
     class Meta:
         model = InstagramAccount
@@ -27,6 +28,7 @@ class InstagramAccountSerializer(serializers.ModelSerializer):
 
 
 class InstagramPostSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = InstagramPost
         exclude = ['ig_account']
