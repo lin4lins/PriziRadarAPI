@@ -1,7 +1,6 @@
 from django.http import JsonResponse
 from rest_framework import viewsets, status
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -28,11 +27,6 @@ class UserViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         token, created = Token.objects.get_or_create(user = serializer.instance)
         return JsonResponse({"token": token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
-
-    @action(detail = False, methods = ['get'])
-    def me(self, request):
-        serializer = self.get_serializer(request.user)
-        return JsonResponse(serializer.data)
 
     def list(self, request, *args, **kwargs):
         raise MethodNotAllowed('GET')
