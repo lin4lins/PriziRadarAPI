@@ -22,7 +22,7 @@ class InstagramAccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InstagramAccount
-        exclude = ['user']
+        fields = '__all__'
         read_only_fields = ["ig_id", "user"]
 
 

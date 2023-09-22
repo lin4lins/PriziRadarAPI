@@ -21,7 +21,7 @@ class InstagramAccount(models.Model):
     ig_id = models.CharField(unique=True)
     access_token = models.CharField(unique = True)
     last_login = models.DateTimeField(auto_now_add = True)
-    user = models.OneToOneField(User, on_delete = models.CASCADE, related_name = "ig_account")
+    user = models.ForeignKey(User, on_delete = models.CASCADE, related_name = "ig_account")
 
     def __str__(self):
         return f"IG account {self.id}, last accessed {self.last_login}"
