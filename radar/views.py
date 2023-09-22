@@ -1,4 +1,6 @@
 from django.http import JsonResponse
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
 from rest_framework import viewsets, status
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import MethodNotAllowed
@@ -59,3 +61,17 @@ class InstagramPostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(ig_account=self.request.user.ig_account)
+
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Your API",
+        default_version='v1',
+        description="Description of your API",
+        terms_of_service="https://www.yourapp.com/terms/",
+        contact=openapi.Contact(email="contact@yourapp.com"),
+        license=openapi.License(name="Your License"),
+    ),
+    public=True,
+    permission_classes=[AllowAny],
+)
