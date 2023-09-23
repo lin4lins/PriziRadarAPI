@@ -1,15 +1,19 @@
+import random
+
 from django.http import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from rest_framework import status, viewsets
+from rest_framework import generics, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from radar.models import InstagramAccount, InstagramPost, User
+from radar.models import InstagramAccount, User, InstagramComment
 from radar.serialzers import (InstagramAccountSerializer,
+                              InstagramCommentSerializer,
                               InstagramPostSerializer, UserSerializer)
+from radar.utils import get_comments_by_post_instance
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -55,17 +59,35 @@ class InstagramAccountViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class InstagramPostViewSet(viewsets.ModelViewSet):
-    queryset = InstagramPost.objects.all()
+class InstagramPostRandomCommentView(generics.GenericAPIView):
     serializer_class = InstagramPostSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        return self.queryset.filter(ig_account__user=user)
+    def post(self, request):
+        ig_post = self.create_post(request.data)
+        comments = get_comments_by_post_instance(
+            ig_post, ig_post.ig_account.access_token)
+        if comments:
+            print(comments)
+            serialized_comments = self.serialize_comments(comments)
+            random_comment = random.choice(serialized_comments)
+            return JsonResponse({'comment': random_comment},
+                                status=status.HTTP_200_OK)
+        else:
+            return JsonResponse({'error': 'No comments found'},
+                                status=status.HTTP_404_NOT_FOUND)
 
-    def perform_create(self, serializer):
-        serializer.save(ig_account=self.request.user.ig_account)
+    def create_post(self, request_data):
+        serializer = self.get_serializer(data=request_data)
+        serializer.is_valid(raise_exception=True)
+        post = serializer.save()
+        return post
+
+    @staticmethod
+    def serialize_comments(comments):
+        comment_instances = [InstagramComment(**comment_data) for comment_data in comments]
+        serialized_comments = InstagramCommentSerializer(comment_instances, many=True)
+        return serialized_comments.data
 
 
 schema_view = get_schema_view(

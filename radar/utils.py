@@ -37,6 +37,10 @@ def generate_instagram_media_url(account_ig_id: str, access_token: str) -> str:
     return build_url(f"{FACEBOOK_API_BASE_URL}/{account_ig_id}/media", params)
 
 
+def generate_instagram_comments_url(post_ig_id: str, access_token: str) -> str:
+    """Generate Instagram comments URL for a specific post."""
+    params = {"fields": "text,username", "access_token": access_token}
+    return build_url(f"{FACEBOOK_API_BASE_URL}/{post_ig_id}/comments", params)
 
 
 def get_account_ig_id(access_token: str) -> str:
@@ -61,3 +65,14 @@ def get_post_ig_id(account_ig_id: str, shortcode: str,
     for post in data['data']:
         if post['ig_id'] == old_version_id:
             return post['id']
+
+
+def get_comments_by_post_instance(post: str, access_token: str) -> list:
+    """Get comments of the post by IG ID."""
+    data = make_request(
+        generate_instagram_comments_url(post.ig_id, access_token))
+    return [{
+        "ig_post": post,
+        "text": comment.get("text", ""),
+        "author_username": comment.get("username", "")
+    } for comment in data.get("data", [])]

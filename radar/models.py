@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 
-from radar.utils import get_ig_account_id, get_post_ig_id
+from radar.utils import get_account_ig_id, get_post_ig_id
 
 
 class User(AbstractBaseUser):
@@ -30,7 +30,7 @@ class InstagramAccount(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.ig_id:
-            self.ig_id = get_ig_account_id(self.access_token)
+            self.ig_id = get_account_ig_id(self.access_token)
 
         super().save(*args, **kwargs)
 
@@ -50,8 +50,15 @@ class InstagramPost(models.Model):
             self.shortcode = path.strip('/').split('/')[-1]
 
         if not self.ig_id:
-            self.ig_id = get_post_ig_id(self.ig_account.ig_id,
-                                        self.ig_account.access_token,
-                                        self.shortcode)
+            self.ig_id = get_post_ig_id(self.ig_account.ig_id, self.shortcode,
+                                        self.ig_account.access_token)
 
         super().save(*args, **kwargs)
+
+
+class InstagramComment(models.Model):
+    ig_post = models.ForeignKey(InstagramPost,
+                                on_delete=models.CASCADE,
+                                related_name="ig_comments")
+    text = models.CharField(max_length=255)
+    author_username = models.CharField(max_length=255)
