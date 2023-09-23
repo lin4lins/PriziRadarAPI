@@ -6,6 +6,7 @@ ACCOUNTS_URL = f"{FACEBOOK_API_BASE_URL}/me/accounts"
 QUERY_HASH = "eaffee8f3c9c089c9904a5915a898814"
 
 
+# Genaral
 def build_url(base_url, params):
     """Build a URL with parameters."""
     param_string = '&'.join(
@@ -13,49 +14,50 @@ def build_url(base_url, params):
     return f"{base_url}?{param_string}"
 
 
-def get_ig_business_accounts_url(user_ig_token: str) -> str:
-    """Generate the Instagram business accounts URL."""
+def make_request(url):
+    """Make an HTTP GET request and return the JSON response."""
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.json()
+
+
+# Urls generation
+def get_ig_business_accounts_url(access_token: str) -> str:
+    """Generate Instagram business accounts URL."""
     params = {
         "fields": "instagram_business_account",
-        "access_token": user_ig_token,
+        "access_token": access_token
     }
     return build_url(ACCOUNTS_URL, params)
 
 
-def generate_instagram_media_url(user_ig_token: str,
-                                 ig_account_id: str) -> str:
-    instagram_media_url = f"{FACEBOOK_API_BASE_URL}/{ig_account_id}/media"
-    """Generate the Instagram media URL for a specific account."""
-    params = {"fields": "ig_id", "access_token": user_ig_token}
-    return build_url(instagram_media_url, params)
+def generate_instagram_media_url(account_ig_id: str, access_token: str) -> str:
+    """Generate Instagram media URL for a specific account."""
+    params = {"fields": "ig_id", "access_token": access_token}
+    return build_url(f"{FACEBOOK_API_BASE_URL}/{account_ig_id}/media", params)
 
 
-def get_ig_account_id(access_token: str) -> str:
-    """Get the Instagram business account ID."""
-    response = requests.get(get_ig_business_accounts_url(access_token))
-    response.raise_for_status()
-    data_dict = response.json()
-    return data_dict["data"][0]["instagram_business_account"]["id"]
+
+
+def get_account_ig_id(access_token: str) -> str:
+    """Get Instagram business account ID."""
+    data = make_request(get_ig_business_accounts_url(access_token))
+    return data["data"][0]["instagram_business_account"]["id"]
 
 
 def get_post_old_ig_id(shortcode: str) -> str:
-    """Get the old Instagram media ID."""
+    """Get old Instagram media ID."""
     url = f'https://www.instagram.com/graphql/query/?query_hash={QUERY_HASH}&variables={{"shortcode": "{shortcode}"}}'
-    response = requests.get(url)
-    response.raise_for_status()
-    data_dict = response.json()
-    return data_dict['data']['shortcode_media']['id']
+    data = make_request(url)
+    return data['data']['shortcode_media']['id']
 
 
-def get_post_ig_id(ig_account_id: str, access_token: str,
-                   shortcode: str) -> str:
-    """Get the new post ID by old version ID."""
+def get_post_ig_id(account_ig_id: str, shortcode: str,
+                   access_token: str) -> str:
+    """Get new post ID by old version ID."""
     old_version_id = get_post_old_ig_id(shortcode)
-    url = generate_instagram_media_url(access_token, ig_account_id)
-    response = requests.get(url)
-    print(response.content)
-    response.raise_for_status()
-    data_dict = response.json()
-    for post in data_dict['data']:
+    data = make_request(
+        generate_instagram_media_url(account_ig_id, access_token))
+    for post in data['data']:
         if post['ig_id'] == old_version_id:
             return post['id']
