@@ -35,11 +35,16 @@ class InstagramPostSerializer(serializers.ModelSerializer):
         exclude = ['ig_account']
         read_only_fields = ['ig_id', 'shortcode', 'ig_account']
 
-    def create(self, validated_data):
+    def get_or_create(self, validated_data):
+        url = validated_data.get('url')
+        existing_post = InstagramPost.objects.filter(url = url).first()
+        if existing_post:
+            return existing_post, False
+
         account_id = validated_data.pop('account_id')
         ig_account = InstagramAccount.objects.get(id = account_id)
         validated_data['ig_account'] = ig_account
-        return super().create(validated_data)
+        return super().create(validated_data), True
 
 
 class InstagramCommentSerializer(serializers.ModelSerializer):
@@ -47,5 +52,4 @@ class InstagramCommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InstagramComment
-        fields = '__all__'
-        exclude = 'id'
+        exclude = ['id']

@@ -64,7 +64,7 @@ class InstagramPostRandomCommentView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        ig_post = self.create_post(request.data)
+        ig_post = self.get_post(request.data)
         comments = get_comments_by_post_instance(
             ig_post, ig_post.ig_account.access_token)
         if comments:
@@ -76,10 +76,10 @@ class InstagramPostRandomCommentView(generics.GenericAPIView):
             return JsonResponse({'error': 'No comments found'},
                                 status=status.HTTP_404_NOT_FOUND)
 
-    def create_post(self, request_data):
+    def get_post(self, request_data):
         serializer = self.get_serializer(data=request_data)
         serializer.is_valid(raise_exception=True)
-        post = serializer.save()
+        post, is_created = serializer.get_or_create(serializer.validated_data)
         return post
 
     @staticmethod

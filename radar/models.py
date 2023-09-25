@@ -37,7 +37,7 @@ class InstagramAccount(models.Model):
 
 class InstagramPost(models.Model):
     ig_id = models.CharField(unique=True)
-    url = models.CharField(unique=True)
+    url = models.CharField()
     shortcode = models.CharField(unique=True)
     ig_account = models.ForeignKey(InstagramAccount,
                                    on_delete=models.CASCADE,
