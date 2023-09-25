@@ -68,7 +68,6 @@ class InstagramPostRandomCommentView(generics.GenericAPIView):
         comments = get_comments_by_post_instance(
             ig_post, ig_post.ig_account.access_token)
         if comments:
-            print(comments)
             serialized_comments = self.serialize_comments(comments)
             random_comment = random.choice(serialized_comments)
             return JsonResponse({'comment': random_comment},
@@ -85,8 +84,11 @@ class InstagramPostRandomCommentView(generics.GenericAPIView):
 
     @staticmethod
     def serialize_comments(comments):
-        comment_instances = [InstagramComment(**comment_data) for comment_data in comments]
-        serialized_comments = InstagramCommentSerializer(comment_instances, many=True)
+        comment_instances = [
+            InstagramComment(**comment_data) for comment_data in comments
+        ]
+        serialized_comments = InstagramCommentSerializer(comment_instances,
+                                                         many=True)
         return serialized_comments.data
 
 
