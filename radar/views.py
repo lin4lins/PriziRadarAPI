@@ -1,11 +1,12 @@
 import random
 
+from django.db import utils, transaction
 from django.http import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import generics, status, viewsets
 from rest_framework.authtoken.models import Token
-from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.exceptions import MethodNotAllowed, ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -51,7 +52,11 @@ class InstagramAccountViewSet(viewsets.ModelViewSet):
         return InstagramAccount.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        try:
+            with transaction.atomic():
+                serializer.save(user=self.request.user)
+        except utils.IntegrityError:
+            raise ValidationError()
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
