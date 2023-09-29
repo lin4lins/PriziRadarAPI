@@ -71,15 +71,15 @@ class InstagramPostRandomCommentView(generics.GenericAPIView):
     def post(self, request):
         ig_post = self.get_post(request.data)
         comments = get_comments_by_post_instance(
-            ig_post, ig_post.ig_account.access_token)
+            ig_post, ig_post.ig_account)
         if comments:
             serialized_comments = self.serialize_comments(comments)
             random_comment = random.choice(serialized_comments)
             return JsonResponse({'comment': random_comment},
                                 status=status.HTTP_200_OK)
         else:
-            return JsonResponse({'error': 'No comments found'},
-                                status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({'warning': 'No comments found'},
+                                status=status.HTTP_200_OK)
 
     def get_post(self, request_data):
         serializer = self.get_serializer(data=request_data)

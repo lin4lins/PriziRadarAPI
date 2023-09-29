@@ -14,8 +14,13 @@ USER_DATA = {
 IG_ACCESS_TOKEN_1 = os.getenv("IG_ACCESS_TOKEN_1")
 IG_ACCESS_TOKEN_2 = os.getenv("IG_ACCESS_TOKEN_2")
 IG_ID = os.getenv("IG_ID")
+POST_URL = os.getenv("POST_URL")
+POST_NO_COMMENTS_URL = os.getenv("POST_NO_COMMENTS_URL")
+POST_SHORTCODE = os.getenv("POST_SHORTCODE")
+POST_ID = os.getenv("POST_ID")
 ACCOUNT_DATA_1 = {'access_token': IG_ACCESS_TOKEN_1}
 ACCOUNT_DATA_2 = {'access_token': IG_ACCESS_TOKEN_2}
+
 
 
 def authenticate(func):

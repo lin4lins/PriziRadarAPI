@@ -61,4 +61,4 @@ class InstagramComment(models.Model):
                                 on_delete=models.CASCADE,
                                 related_name="ig_comments")
     text = models.CharField(max_length=255)
-    author_username = models.CharField(max_length=255)
+    author_ig_id = models.CharField(max_length=255)

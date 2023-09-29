@@ -43,6 +43,12 @@ def generate_instagram_comments_url(post_ig_id: str, access_token: str) -> str:
     return build_url(f"{FACEBOOK_API_BASE_URL}/{post_ig_id}/comments", params)
 
 
+def generate_business_discovery_url(username: str, user_id_id: str, access_token: str) -> str:
+    params = {"fields": f"business_discovery.username({username})", "access_token": access_token}
+    return build_url(f"{FACEBOOK_API_BASE_URL}/{user_id_id}", params)
+
+
+# Requests
 def get_account_ig_id(access_token: str) -> str:
     """Get Instagram business account ID."""
     data = make_request(get_ig_business_accounts_url(access_token))
@@ -67,12 +73,18 @@ def get_post_ig_id(account_ig_id: str, shortcode: str,
             return post['id']
 
 
-def get_comments_by_post_instance(post: str, access_token: str) -> list:
+def get_comments_by_post_instance(post: str, ig_account) -> list:
     """Get comments of the post by IG ID."""
     data = make_request(
-        generate_instagram_comments_url(post.ig_id, access_token))
+        generate_instagram_comments_url(post.ig_id, ig_account.access_token))
     return [{
         "ig_post": post,
         "text": comment.get("text", ""),
-        "author_username": comment.get("username", "")
+        "author_ig_id": get_user_id_by_username(comment.get("username", ""), ig_account.ig_id, ig_account.access_token)
     } for comment in data.get("data", [])]
+
+
+def get_user_id_by_username(username: str, user_ig_id: str, access_token) -> str:
+    """Get Instagram business account ID."""
+    data = make_request(generate_business_discovery_url(username, user_ig_id, access_token))
+    return data['business_discovery']['id']
