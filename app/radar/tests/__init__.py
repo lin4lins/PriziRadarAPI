@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from rest_framework.authtoken.models import Token
 
-from app.radar.models import User, InstagramAccount
+from radar.models import User, InstagramAccount
 
 load_dotenv()
 
@@ -20,7 +20,6 @@ POST_SHORTCODE = os.getenv("POST_SHORTCODE")
 POST_ID = os.getenv("POST_ID")
 ACCOUNT_DATA_1 = {'access_token': IG_ACCESS_TOKEN_1}
 ACCOUNT_DATA_2 = {'access_token': IG_ACCESS_TOKEN_2}
-
 
 
 def authenticate(func):
