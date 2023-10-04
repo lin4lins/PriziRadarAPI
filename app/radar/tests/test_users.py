@@ -2,8 +2,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from radar.models import User
-from radar.tests import USER_DATA, authenticate
+from app.radar.models import User
+from app.radar.tests import USER_DATA, authenticate
 
 
 class UsersTestCase(APITestCase):

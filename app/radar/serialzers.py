@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from radar.models import InstagramAccount, InstagramPost, User, InstagramComment
+from app.radar.models import InstagramAccount, InstagramPost, User, InstagramComment
 
 
 class UserSerializer(serializers.ModelSerializer):

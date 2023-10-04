@@ -3,7 +3,7 @@ from urllib.parse import urlparse
 from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 
-from radar.utils import get_account_ig_id, get_post_ig_id
+from app.radar.utils import get_account_ig_id, get_post_ig_id
 
 
 class User(AbstractBaseUser):

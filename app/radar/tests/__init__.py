@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from rest_framework.authtoken.models import Token
 
-from radar.models import User, InstagramAccount
+from app.radar.models import User, InstagramAccount
 
 load_dotenv()
 

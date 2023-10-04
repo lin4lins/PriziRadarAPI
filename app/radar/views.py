@@ -10,11 +10,11 @@ from rest_framework.exceptions import MethodNotAllowed, ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from radar.models import InstagramAccount, User, InstagramComment
-from radar.serialzers import (InstagramAccountSerializer,
-                              InstagramCommentSerializer,
-                              InstagramPostSerializer, UserSerializer)
-from radar.utils import get_comments_by_post_instance
+from app.radar.models import InstagramAccount, User, InstagramComment
+from app.radar.serialzers import (InstagramAccountSerializer,
+                                  InstagramCommentSerializer,
+                                  InstagramPostSerializer, UserSerializer)
+from app.radar.utils import get_comments_by_post_instance
 
 
 class UserViewSet(viewsets.ModelViewSet):

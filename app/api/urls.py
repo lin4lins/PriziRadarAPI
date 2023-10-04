@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from radar.views import schema_view
+from app.radar.views import schema_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),

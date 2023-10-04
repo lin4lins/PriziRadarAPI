@@ -2,8 +2,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from radar.models import InstagramAccount
-from radar.tests import authenticate, ACCOUNT_DATA_1, IG_ACCESS_TOKEN_1, IG_ID, ACCOUNT_DATA_2, \
+from app.radar.models import InstagramAccount
+from app.radar.tests import authenticate, ACCOUNT_DATA_1, IG_ACCESS_TOKEN_1, IG_ID, ACCOUNT_DATA_2, \
     init_ig_account
 
 
