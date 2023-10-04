@@ -5,6 +5,7 @@ Django==4.2.5
 djangorestframework==3.14.0
 djangorestframework-api-key==2.3.0
 drf-yasg==1.21.7
+gunicorn==21.2.0
 idna==3.4
 importlib-metadata==6.8.0
 inflection==0.5.1
