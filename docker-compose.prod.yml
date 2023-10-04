@@ -1,24 +1,49 @@
 version: '3.8'
 
 services:
-  web:
+  app:
     build:
       context: ./app
       dockerfile: Dockerfile.prod
+    image: 181313080751.dkr.ecr.eu-central-1.amazonaws.com/django-ec2:app
     command: gunicorn api.wsgi:application --bind 0.0.0.0:8000
-    ports:
-      - "8000:8000"
+    expose:
+      - 8000
     env_file:
       - ./.env.prod
-    depends_on:
-      - db
 
-  db:
-    image: postgres
+  nginx-proxy:
+    container_name: nginx-proxy
+    build: nginx
+    image: 181313080751.dkr.ecr.eu-central-1.amazonaws.com/django-ec2:nginx-proxy
+
+    restart: always
+    ports:
+      - 443:443
+      - 80:80
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    depends_on:
+      - app
+
+  acme-companion:
+    image: nginxproxy/acme-companion
     env_file:
-      - ./.env.prod
+      - ./.env.prod.proxy-companion
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - acme:/etc/acme.sh
+    depends_on:
+      - nginx-proxy
 
 volumes:
-  postgres_data:
+  certs:
+  html:
+  vhost:
+  acme:
