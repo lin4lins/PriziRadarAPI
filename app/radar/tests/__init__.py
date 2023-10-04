@@ -1,8 +1,6 @@
 import os
-
 from dotenv import load_dotenv
 from rest_framework.authtoken.models import Token
-
 from radar.models import User, InstagramAccount
 
 load_dotenv()
@@ -25,8 +23,8 @@ ACCOUNT_DATA_2 = {'access_token': IG_ACCESS_TOKEN_2}
 def authenticate(func):
     def wrapper(self, *args, **kwargs):
         user_1 = User.objects.create(**USER_DATA)
-        token = Token.objects.create(user = user_1)
-        self.client.credentials(HTTP_AUTHORIZATION = 'Token ' + token.key)
+        token = Token.objects.create(user=user_1)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         func(self, user_1, *args, **kwargs)
         self.client.credentials()
         user_1.delete()
@@ -40,4 +38,3 @@ def init_ig_account(func):
         func(self, *args, **kwargs)
         ig_account.delete()
     return wrapper
-

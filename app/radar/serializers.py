@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from radar.models import InstagramAccount, InstagramPost, User, InstagramComment
 
 
@@ -37,18 +36,18 @@ class InstagramPostSerializer(serializers.ModelSerializer):
 
     def get_or_create(self, validated_data):
         url = validated_data.get('url')
-        existing_post = InstagramPost.objects.filter(url = url).first()
+        existing_post = InstagramPost.objects.filter(url=url).first()
         if existing_post:
             return existing_post, False
 
         account_id = validated_data.pop('account_id')
-        ig_account = InstagramAccount.objects.get(id = account_id)
+        ig_account = InstagramAccount.objects.get(id=account_id)
         validated_data['ig_account'] = ig_account
         return super().create(validated_data), True
 
 
 class InstagramCommentSerializer(serializers.ModelSerializer):
-    ig_post = serializers.PrimaryKeyRelatedField(queryset = InstagramPost.objects.all())
+    ig_post = serializers.PrimaryKeyRelatedField(queryset=InstagramPost.objects.all())
 
     class Meta:
         model = InstagramComment
