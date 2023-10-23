@@ -1,64 +1,45 @@
-from urllib.parse import urlparse
+from datetime import datetime, timedelta
 
-from django.contrib.auth.models import AbstractBaseUser
 from django.db import models
 
-from radar.utils import get_account_ig_id, get_post_ig_id
+from radar.utils import get_account_id, get_account_details
 
 
-class User(AbstractBaseUser):
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(auto_now_add=True)
+class AccountManager(models.Manager):
+    def get_or_create(self, ig_token):
+        account_id = get_account_id(ig_token)
+        try:
+            return self.get(id=account_id), False
 
-    USERNAME_FIELD = 'email'
+        except Account.DoesNotExist:
+            account_details = get_account_details(account_id, ig_token)
+            return self.create(**account_details), True
+
+
+class Account(models.Model):
+    id = models.CharField(primary_key=True, unique=True)
+    name = models.CharField()
+    username = models.CharField(unique = True)
+    profile_picture_url = models.CharField()
+
+    objects = AccountManager()
+
+    REQUIRED_FIELDS = []
+    USERNAME_FIELD = "id"
 
     def __str__(self):
-        return f"User {self.id}, {self.email}"
+        return f"IG account {self.id}, {self.username}"
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    @property
+    def is_authenticated(self):
+        return True
 
 
-class InstagramAccount(models.Model):
-    ig_id = models.CharField(unique=True)
-    access_token = models.CharField(unique=True)
-    last_login = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User,
-                             on_delete=models.CASCADE,
-                             related_name="ig_accounts")
-
-    def __str__(self):
-        return f"IG account {self.id}, last accessed {self.last_login}"
-
-    def save(self, *args, **kwargs):
-        if not self.ig_id:
-            self.ig_id = get_account_ig_id(self.access_token)
-
-        super().save(*args, **kwargs)
-
-
-class InstagramPost(models.Model):
-    ig_id = models.CharField(unique=True)
-    url = models.CharField()
-    shortcode = models.CharField(unique=True)
-    ig_account = models.ForeignKey(InstagramAccount,
-                                   on_delete=models.CASCADE,
-                                   related_name="ig_posts")
-
-    def save(self, *args, **kwargs):
-        if not self.shortcode:
-            parsed_url = urlparse(self.url)
-            path = parsed_url.path
-            self.shortcode = path.strip('/').split('/')[-1]
-
-        if not self.ig_id:
-            self.ig_id = get_post_ig_id(self.ig_account.ig_id, self.shortcode,
-                                        self.ig_account.access_token)
-
-        super().save(*args, **kwargs)
-
-
-class InstagramComment(models.Model):
-    ig_post = models.ForeignKey(InstagramPost,
-                                on_delete=models.CASCADE,
-                                related_name="ig_comments")
-    text = models.CharField(max_length=255)
-    author_ig_id = models.CharField(max_length=255)
+class Connection(models.Model):
+    account = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='connections')
+    ig_token = models.CharField(unique = True)
+    expires_at = models.DateTimeField(default=datetime.now() + timedelta(days=30))
