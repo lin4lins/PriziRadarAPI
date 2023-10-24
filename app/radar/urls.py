@@ -3,7 +3,7 @@ from django.urls import path
 from radar import views
 
 urlpatterns = [
-    path('connection/', views.ConnectionCreateView.as_view(), name='connection-create'),
+    path('login/', views.LogInView.as_view(), name='login'),
     # path('random-comment/',
     #      views.InstagramPostRandomCommentView.as_view(),
     #      name='random-comment'),

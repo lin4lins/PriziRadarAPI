@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.tokens import AccessToken
 
+from radar.auth import authenticate
 from radar.models import Account, Connection
 
 
@@ -12,7 +14,6 @@ class AccountSerializer(serializers.ModelSerializer):
 
 
 class ConnectionSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Connection
         fields = ['id', 'ig_token']
@@ -24,3 +25,24 @@ class ConnectionSerializer(serializers.ModelSerializer):
         connection = Connection(account = account, **validated_data)
         connection.save()
         return connection
+
+
+class TokenObtainSerializer(serializers.Serializer):
+    token_class = AccessToken
+    ig_token = serializers.CharField(write_only=True)
+
+    def validate(self, attrs: dict) -> dict:
+        data = super().validate(attrs)
+        connection = self.create_connection(data)
+        token = self.get_token(connection)
+        return {'access': str(token)}
+
+    @staticmethod
+    def create_connection(attrs: dict) -> Connection:
+        serializer = ConnectionSerializer(data = attrs)
+        serializer.is_valid(raise_exception = True)
+        return serializer.save()
+
+    @classmethod
+    def get_token(cls, connection):
+        return cls.token_class.for_user(connection)

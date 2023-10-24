@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 from django.db import models
 
 from radar.utils import get_account_id, get_account_details
@@ -24,11 +22,16 @@ class Account(models.Model):
 
     objects = AccountManager()
 
-    REQUIRED_FIELDS = []
-    USERNAME_FIELD = "id"
-
     def __str__(self):
         return f"IG account {self.id}, {self.username}"
+
+
+class Connection(models.Model):
+    account = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='connections')
+    ig_token = models.CharField(unique = True)
+
+    REQUIRED_FIELDS = []
+    USERNAME_FIELD = "id"
 
     @property
     def is_anonymous(self):
@@ -37,9 +40,3 @@ class Account(models.Model):
     @property
     def is_authenticated(self):
         return True
-
-
-class Connection(models.Model):
-    account = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='connections')
-    ig_token = models.CharField(unique = True)
-    expires_at = models.DateTimeField(default=datetime.now() + timedelta(days=30))
