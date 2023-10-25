@@ -1,8 +1,7 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.tokens import AccessToken
 
-from radar.auth import authenticate
 from radar.models import Account, Connection
+from radar.tokens import ConnectionAccessToken
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -27,8 +26,8 @@ class ConnectionSerializer(serializers.ModelSerializer):
         return connection
 
 
-class TokenObtainSerializer(serializers.Serializer):
-    token_class = AccessToken
+class ConnectionTokenObtainSerializer(serializers.Serializer):
+    token_class = ConnectionAccessToken
     ig_token = serializers.CharField(write_only=True)
 
     def validate(self, attrs: dict) -> dict:
@@ -45,4 +44,4 @@ class TokenObtainSerializer(serializers.Serializer):
 
     @classmethod
     def get_token(cls, connection):
-        return cls.token_class.for_user(connection)
+        return cls.token_class.for_connection(connection)

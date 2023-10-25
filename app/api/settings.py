@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'radar.middleware.ConnectionMiddleware',
 ]
 
 ROOT_URLCONF = 'api.urls'
@@ -136,19 +137,24 @@ SWAGGER_SETTINGS = {
 }
 
 # JWT token
-AUTH_USER_MODEL = "radar.Connection"
+AUTHENTICATION_BACKENDS = [
+    'radar.backends.ConnectionBackend',
+    # Add other backends if needed
+]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'radar.auth.ConnectionJWTAuthentication',
     ),
 }
+
+CONNECTION_ID_CLAIM = "connection_id"
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
     "SIGNING_KEY": SECRET_KEY,
-    "USER_ID_CLAIM": "connection_id",
-    "TOKEN_OBTAIN_SERIALIZER": "radar.token.TokenObtainPairSerializer",
+    "USER_ID_CLAIM": CONNECTION_ID_CLAIM,
+    "TOKEN_OBTAIN_SERIALIZER": "radar.serializers.ConnectionTokenObtainSerializer",
 }
 
 # Deploy

@@ -1,27 +1,27 @@
 from django.http import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from rest_framework import permissions
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenViewBase
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.views import TokenObtainPairView
 
+from radar import permissions
+from radar.auth import ConnectionJWTAuthentication
 from radar.models import Connection
-from radar.serializers import TokenObtainSerializer
+from radar.serializers import ConnectionTokenObtainSerializer
 
 
-class LogInView(TokenViewBase):
+class LogInView(TokenObtainPairView):
     queryset = Connection.objects.all()
-    serializer_class = TokenObtainSerializer
+    serializer_class = ConnectionTokenObtainSerializer
 
 
 class HomeView(APIView):
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [ConnectionJWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        return JsonResponse({"message": f"Welcome home! {request.user.account.username}"})
+        return JsonResponse({"message": f"Welcome home! {request.connection.account.name}"})
 
 
 schema_view = get_schema_view(

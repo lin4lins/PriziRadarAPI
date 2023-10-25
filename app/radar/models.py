@@ -22,14 +22,6 @@ class Account(models.Model):
 
     objects = AccountManager()
 
-    def __str__(self):
-        return f"IG account {self.id}, {self.username}"
-
-
-class Connection(models.Model):
-    account = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='connections')
-    ig_token = models.CharField(unique = True)
-
     REQUIRED_FIELDS = []
     USERNAME_FIELD = "id"
 
@@ -44,3 +36,11 @@ class Connection(models.Model):
     @property
     def is_active(self):
         return True
+
+    def __str__(self):
+        return f"IG account {self.id}, {self.username}"
+
+
+class Connection(models.Model):
+    account = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='connections')
+    ig_token = models.CharField(unique = True)
