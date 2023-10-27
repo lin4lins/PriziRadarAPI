@@ -1,5 +1,4 @@
 from django.urls import path
-
 from radar import views
 
 urlpatterns = [

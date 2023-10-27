@@ -1,7 +1,6 @@
+from radar.models import Connection
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import AccessToken, Token
-
-from radar.models import Connection
 
 
 class ConnectionAccessToken(AccessToken):

@@ -1,14 +1,13 @@
 from typing import Optional, Tuple
 
+from django.utils.translation import gettext_lazy as _
+from radar.models import Connection
 from rest_framework.request import Request
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken, AuthenticationFailed
-from rest_framework_simplejwt.tokens import Token
+from rest_framework_simplejwt.exceptions import (AuthenticationFailed,
+                                                 InvalidToken)
 from rest_framework_simplejwt.settings import api_settings
-
-from django.utils.translation import gettext_lazy as _
-
-from radar.models import Connection
+from rest_framework_simplejwt.tokens import Token
 
 
 class ConnectionJWTAuthentication(JWTAuthentication):

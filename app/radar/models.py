@@ -1,6 +1,5 @@
 from django.db import models
-
-from radar.utils import get_account_id, get_account_details
+from radar.utils import get_account_details, get_account_id
 
 
 class AccountManager(models.Manager):

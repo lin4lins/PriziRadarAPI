@@ -1,5 +1,4 @@
 from django.contrib.auth.backends import ModelBackend
-
 from radar.models import Connection
 
 

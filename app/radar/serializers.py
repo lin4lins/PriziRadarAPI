@@ -1,7 +1,6 @@
-from rest_framework import serializers
-
 from radar.models import Account, Connection
 from radar.tokens import ConnectionAccessToken
+from rest_framework import serializers
 
 
 class AccountSerializer(serializers.ModelSerializer):
