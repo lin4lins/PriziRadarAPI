@@ -21,24 +21,6 @@ class Account(models.Model):
 
     objects = AccountManager()
 
-    REQUIRED_FIELDS = []
-    USERNAME_FIELD = "id"
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    @property
-    def is_authenticated(self):
-        return True
-
-    @property
-    def is_active(self):
-        return True
-
-    def __str__(self):
-        return f"IG account {self.id}, {self.username}"
-
 
 class Connection(models.Model):
     account = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='connections')
