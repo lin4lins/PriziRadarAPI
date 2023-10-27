@@ -6,6 +6,8 @@ class ConnectionMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        request.connection = ConnectionJWTAuthentication().authenticate(request)[0]
+        if request.path != '/login/':
+            request.connection = ConnectionJWTAuthentication().authenticate(request)[0]
+
         response = self.get_response(request)
         return response

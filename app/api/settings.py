@@ -155,6 +155,7 @@ SIMPLE_JWT = {
     "SIGNING_KEY": SECRET_KEY,
     "USER_ID_CLAIM": CONNECTION_ID_CLAIM,
     "TOKEN_OBTAIN_SERIALIZER": "radar.serializers.ConnectionTokenObtainSerializer",
+    "AUTH_TOKEN_CLASSES": ("radar.tokens.ConnectionAccessToken",)
 }
 
 # Deploy
