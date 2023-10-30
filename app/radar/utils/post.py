@@ -1,0 +1,83 @@
+import random
+from urllib.parse import urlparse
+
+from rest_framework.exceptions import ValidationError
+
+from radar.utils import build_url, FACEBOOK_API_BASE_URL, make_request, QUERY_HASH
+
+
+class Post:
+    def __init__(self, id: str, caption: str, media_url: str, comments_count: str):
+        self.id = id
+        self.caption = caption
+        self.media_url = media_url
+        self.comments_count = comments_count
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "caption": self.caption,
+            "media_url": self.media_url,
+            "comments_count": self.comments_count
+        }
+
+
+class IGPostFetcher:
+    def __init__(self, account_id: str, access_token: str, url = None):
+        self.__account_id = account_id
+        self.__access_token = access_token
+        self.__url = url
+
+        self.__shortcode = None
+        self.__post = None
+
+    @property
+    def post(self):
+        if self.__post is None:
+            self.__define_post()
+
+        return self.__post
+
+    def __generate_media_url(self):
+        params = {"fields": "ig_id", "access_token": self.__access_token}
+        return build_url(f"{FACEBOOK_API_BASE_URL}/{self.__account_id}/media", params)
+
+    def __generate_comments_url(self, post_ig_id):
+        params = {"fields": "text,username", "access_token": self.__access_token}
+        return build_url(f"{FACEBOOK_API_BASE_URL}/{post_ig_id}/comments", params)
+
+    def __generate_details_url(self, post_ig_id):
+        params = {"fields": "id,media_type,thumbnail_url,media_url,caption,comments_count",
+                  "access_token": self.__access_token}
+        return build_url(f"{FACEBOOK_API_BASE_URL}/{post_ig_id}", params)
+
+    def __get_old_ig_id(self):
+        url = (f'https://www.instagram.com/graphql/query/?query_hash={QUERY_HASH}'
+               f'&variables={{"shortcode": "{self.__shortcode}"}}')
+        data = make_request(url)
+        try:
+            return data['data']['shortcode_media']['id']
+        except TypeError:
+            raise ValidationError("Invalid URL.")
+
+    def __get_ig_id(self):
+        old_version_id = self.__get_old_ig_id()
+        data = make_request(self.__generate_media_url())
+        for post in data['data']:
+            if post['ig_id'] == old_version_id:
+                return post['id']
+
+    def __parse_shortcode(self):
+        parsed_url = urlparse(self.__url)
+        path = parsed_url.path
+        path_parts = path.split('/')
+        self.__shortcode = path_parts[-2]
+
+    def __define_post(self):
+        post_id = self.__get_ig_id()
+        details = make_request(self.__generate_details_url(post_id))
+        post_type = details.pop('media_type')
+        if post_type == "VIDEO":
+            details['media_url'] = details.pop('thumbnail_url')
+
+        self.__post = Post(**details)

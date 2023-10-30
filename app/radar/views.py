@@ -11,7 +11,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from radar.utils.comment import get_post_details
+from radar.utils.post import IGPostFetcher
 
 
 class LogInView(TokenObtainPairView):
@@ -19,18 +19,28 @@ class LogInView(TokenObtainPairView):
     serializer_class = ConnectionTokenObtainSerializer
 
 
-class PostGetView(APIView):
+class PostView(APIView):
     authentication_classes = [ConnectionJWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        url_param = request.GET.get("url", None)
-        if url_param is None:
+        url = request.GET.get("url", None)
+        if url is None:
             raise ValidationError("The 'url' parameter is required.")
 
-        connection = request.connection
-        post_details = get_post_details(connection.account.id, url_param, connection.ig_token)
-        return JsonResponse(post_details)
+        post_fetcher = IGPostFetcher(request.account.id, request.connection.ig_token, url)
+        return JsonResponse(post_fetcher.post.to_dict())
+
+
+class RandomCommentView(APIView):
+    authentication_classes = [ConnectionJWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, id):
+
+        comments_count = request.GET.get("url", 1)
+        check_like = request.GET.get("check_likes", False)
+        check_sub = request.GET.get("check_likes", False)
 
 
 schema_view = get_schema_view(
