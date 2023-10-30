@@ -1,4 +1,4 @@
-from django.contrib.sites import requests
+import requests
 from rest_framework.exceptions import AuthenticationFailed
 
 GRAPH_API_VERSION = "v17.0"
@@ -19,5 +19,4 @@ def make_request(url):
     response = requests.get(url)
     if response.status_code != 200:
         raise AuthenticationFailed()
-
     return response.json()

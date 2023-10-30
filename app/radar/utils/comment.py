@@ -1,3 +1,7 @@
+from urllib.parse import urlparse
+
+from rest_framework.exceptions import ValidationError
+
 from radar.utils import build_url, FACEBOOK_API_BASE_URL, make_request, QUERY_HASH
 
 
@@ -13,16 +17,19 @@ def generate_post_comments_url(post_ig_id: str, access_token: str) -> str:
     return build_url(f"{FACEBOOK_API_BASE_URL}/{post_ig_id}/comments", params)
 
 
-def generate_business_discovery_url(username: str, account_id: str, access_token: str) -> str:
-    params = {"fields": f"business_discovery.username({username})", "access_token": access_token}
-    return build_url(f"{FACEBOOK_API_BASE_URL}/{account_id}", params)
+def generate_post_details_url(post_ig_id: str, access_token: str) -> str:
+    params = {"fields": "id,media_type,thumbnail_url,media_url,caption,comments_count", "access_token": access_token}
+    return build_url(f"{FACEBOOK_API_BASE_URL}/{post_ig_id}", params)
 
 
 def get_post_old_ig_id(shortcode: str) -> str:
     """Get old Instagram media ID."""
     url = f'https://www.instagram.com/graphql/query/?query_hash={QUERY_HASH}&variables={{"shortcode": "{shortcode}"}}'
     data = make_request(url)
-    return data['data']['shortcode_media']['id']
+    try:
+        return data['data']['shortcode_media']['id']
+    except TypeError:
+        raise ValidationError("Invalid url.")
 
 
 def get_post_ig_id(account_id: str, shortcode: str,
@@ -36,18 +43,19 @@ def get_post_ig_id(account_id: str, shortcode: str,
             return post['id']
 
 
-def get_comments_by_post_instance(post: str, ig_account) -> list:
-    """Get comments of the post by IG ID."""
-    data = make_request(
-        generate_post_comments_url(post.ig_id, ig_account.access_token))
-    return [{
-        "ig_post": post,
-        "text": comment.get("text", ""),
-        "author_ig_id": get_user_id_by_username(comment.get("username", ""), ig_account.ig_id, ig_account.access_token)
-    } for comment in data.get("data", [])]
+def parse_shortcode(url: str) -> str:
+    parsed_url = urlparse(url)
+    path = parsed_url.path
+    path_parts = path.split('/')
+    return path_parts[-2]
 
 
-def get_user_id_by_username(username: str, account_id: str, access_token) -> str:
-    """Get Instagram business account ID."""
-    data = make_request(generate_business_discovery_url(username, account_id, access_token))
-    return data['business_discovery']['id']
+def get_post_details(account_id, post_url, access_token) -> dict:
+    post_shortcode = parse_shortcode(post_url)
+    post_id = get_post_ig_id(account_id, post_shortcode, access_token)
+    details = make_request(generate_post_details_url(post_id, access_token))
+    post_type = details.pop('media_type')
+    if post_type == "VIDEO":
+        details['media_url'] = details.pop('thumbnail_url')
+
+    return details
