@@ -1,55 +1,6 @@
-import requests
-from rest_framework.exceptions import AuthenticationFailed
-
-GRAPH_API_VERSION = "v17.0"
-FACEBOOK_API_BASE_URL = f"https://graph.facebook.com/{GRAPH_API_VERSION}"
-ACCOUNTS_URL = f"{FACEBOOK_API_BASE_URL}/me/accounts"
-QUERY_HASH = "eaffee8f3c9c089c9904a5915a898814"
+from radar.utils import build_url, FACEBOOK_API_BASE_URL, make_request, QUERY_HASH
 
 
-# Genaral
-def build_url(base_url, params):
-    """Build a URL with parameters."""
-    param_string = '&'.join(
-        [f'{key}={value}' for key, value in params.items()])
-    return f"{base_url}?{param_string}"
-
-
-def make_request(url):
-    """Make an HTTP GET request and return the JSON response."""
-    response = requests.get(url)
-    if response.status_code != 200:
-        raise AuthenticationFailed()
-
-    return response.json()
-
-
-# Login
-def get_ig_business_account_url(access_token: str) -> str:
-    """Generate Instagram business accounts URL."""
-    params = {
-        "fields": "instagram_business_account",
-        "access_token": access_token
-    }
-    return build_url(ACCOUNTS_URL, params)
-
-
-def generate_me_details_url(account_id: str, access_token: str) -> str:
-    params = {"fields": "name,username,profile_picture_url", "access_token": access_token}
-    return build_url(f"{FACEBOOK_API_BASE_URL}/{account_id}", params)
-
-
-def get_account_id(access_token: str) -> str:
-    """Get Instagram business account ID."""
-    data = make_request(get_ig_business_account_url(access_token))
-    return data["data"][0]["instagram_business_account"]["id"]
-
-
-def get_account_details(account_id: str, access_token: str) -> dict:
-    return make_request(generate_me_details_url(account_id, access_token))
-
-
-# --------------
 def generate_me_media_url(account_id: str, access_token: str) -> str:
     """Generate Instagram media URL for a specific account."""
     params = {"fields": "ig_id", "access_token": access_token}
