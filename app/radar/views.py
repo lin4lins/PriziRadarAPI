@@ -29,7 +29,8 @@ class PostView(APIView):
             raise ValidationError("The 'url' parameter is required.")
 
         post_fetcher = IGPostFetcher(request.account.id, request.connection.ig_token, url)
-        return JsonResponse(post_fetcher.post.to_dict())
+        post = post_fetcher.get_post()
+        return JsonResponse(post.to_dict())
 
 
 class RandomCommentView(APIView):
