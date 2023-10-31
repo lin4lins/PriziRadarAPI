@@ -1,5 +1,5 @@
 import requests
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import NotFound
 
 GRAPH_API_VERSION = "v17.0"
 FACEBOOK_API_BASE_URL = f"https://graph.facebook.com/{GRAPH_API_VERSION}"
@@ -18,5 +18,5 @@ def make_request(url):
     """Make an HTTP GET request and return the JSON response."""
     response = requests.get(url)
     if response.status_code != 200:
-        raise AuthenticationFailed()
+        raise NotFound(response.json())
     return response.json()
