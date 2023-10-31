@@ -11,6 +11,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from radar.utils.comment import IGCommentFetcher
 from radar.utils.post import IGPostFetcher
 
 
@@ -38,10 +39,11 @@ class RandomCommentView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, id):
+        comments_count = request.GET.get("count", 1)
 
-        comments_count = request.GET.get("url", 1)
-        check_like = request.GET.get("check_likes", False)
-        check_sub = request.GET.get("check_likes", False)
+        comment_fetcher = IGCommentFetcher(id, request.connection.ig_token, request.account.id)
+        comments = comment_fetcher.get_random_comments(comments_count)
+        return JsonResponse({"comments": [comment.to_dict() for comment in comments]})
 
 
 schema_view = get_schema_view(
