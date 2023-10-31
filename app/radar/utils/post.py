@@ -2,23 +2,15 @@ from urllib.parse import urlparse
 
 from rest_framework.exceptions import ValidationError
 
-from radar.utils import build_url, FACEBOOK_API_BASE_URL, make_request, QUERY_HASH
+from radar.utils import build_url, FACEBOOK_API_BASE_URL, make_request, QUERY_HASH, Base
 
 
-class Post:
+class Post(Base):
     def __init__(self, id: str, caption: str, media_url: str, comments_count: str):
         self.id = id
         self.caption = caption
         self.media_url = media_url
         self.comments_count = comments_count
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "caption": self.caption,
-            "media_url": self.media_url,
-            "comments_count": self.comments_count
-        }
 
 
 class IGPostFetcher:

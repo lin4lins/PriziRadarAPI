@@ -20,3 +20,8 @@ def make_request(url):
     if response.status_code != 200:
         raise NotFound(response.json())
     return response.json()
+
+
+class Base:
+    def to_dict(self):
+        return {key: value for key, value in self.__dict__.items()}

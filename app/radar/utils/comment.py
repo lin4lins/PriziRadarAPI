@@ -1,20 +1,13 @@
 import random
 
-from radar.utils import build_url, FACEBOOK_API_BASE_URL, make_request
+from radar.utils import build_url, FACEBOOK_API_BASE_URL, make_request, Base
 
 
-class Comment:
+class Comment(Base):
     def __init__(self, author_username: str, author_avatar_url: str, text: str):
         self.author_username = author_username
         self.author_avatar_url = author_avatar_url
         self.text = text
-
-    def to_dict(self):
-        return {
-            "author_username": self.author_username,
-            "author_avatar_url": self.author_avatar_url,
-            "text": self.text,
-        }
 
 
 class IGCommentFetcher:
