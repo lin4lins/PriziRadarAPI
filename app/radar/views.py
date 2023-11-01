@@ -16,6 +16,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 class LogInView(TokenObtainPairView):
     queryset = Connection.objects.all()
     serializer_class = ConnectionTokenObtainSerializer
+    permission_classes = [AllowAny]
 
 
 class PostView(APIView):

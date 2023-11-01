@@ -16,15 +16,17 @@ class ConnectionJWTAuthentication(JWTAuthentication):
     def authenticate(self, request: Request) -> Optional[Tuple[Connection, Token]]:
         header = self.get_header(request)
         if header is None:
-            raise AuthenticationFailed("Authorization header not found")
+            return None
 
         raw_token = self.get_raw_token(header)
         if raw_token is None:
-            raise AuthenticationFailed("Authorization token not found")
+            return None
 
         validated_token = self.get_validated_token(raw_token)
 
-        return self.get_connection(validated_token), validated_token
+        request.connection = self.get_connection(validated_token)
+        request.account = request.connection.account
+        return request.connection, validated_token
 
     def get_connection(self, validated_token: Token) -> Connection:
         try:

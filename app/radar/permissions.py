@@ -7,4 +7,7 @@ class IsAuthenticated(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return bool(request.connection)
+        try:
+            return bool(request.connection)
+        except AttributeError:
+            return False
