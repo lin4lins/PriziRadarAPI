@@ -1,18 +1,16 @@
 from django.http import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from rest_framework.exceptions import ValidationError, NotFound
-
 from radar import permissions
 from radar.auth import ConnectionJWTAuthentication
 from radar.models import Connection
 from radar.serializers import ConnectionTokenObtainSerializer
+from radar.utils.comment import IGCommentFetcher
+from radar.utils.post import IGPostFetcher
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-from radar.utils.comment import IGCommentFetcher
-from radar.utils.post import IGPostFetcher
 
 
 class LogInView(TokenObtainPairView):

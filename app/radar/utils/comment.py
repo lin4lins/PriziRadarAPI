@@ -1,6 +1,6 @@
 import random
 
-from radar.utils import build_url, FACEBOOK_API_BASE_URL, make_request, Base
+from radar.utils import FACEBOOK_API_BASE_URL, Base, build_url, make_request
 
 
 class Comment(Base):

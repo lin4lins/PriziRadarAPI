@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 
-from radar.utils import build_url, FACEBOOK_API_BASE_URL, make_request, QUERY_HASH, Base
+from radar.utils import (FACEBOOK_API_BASE_URL, QUERY_HASH, Base, build_url,
+                         make_request)
 
 
 class Post(Base):

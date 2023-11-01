@@ -1,8 +1,8 @@
 from django.http import HttpResponseForbidden
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework_simplejwt.exceptions import AuthenticationFailed as SimpleAuthenticationFailed
-
 from radar.auth import ConnectionJWTAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.exceptions import \
+    AuthenticationFailed as SimpleAuthenticationFailed
 
 
 class ConnectionMiddleware:
