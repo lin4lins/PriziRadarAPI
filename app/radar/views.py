@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, NotFound
 
 from radar import permissions
 from radar.auth import ConnectionJWTAuthentication
@@ -27,10 +27,14 @@ class PostView(APIView):
     def get(self, request):
         url = request.GET.get("url", None)
         if url is None:
-            raise ValidationError("The 'url' parameter is required.")
+            raise ValidationError({'url': "Parameter is required."})
 
         post_fetcher = IGPostFetcher(request.account.id, request.connection.ig_token, url)
-        post = post_fetcher.get_post()
+        try:
+            post = post_fetcher.get_post()
+        except (IndexError, TypeError):
+            raise NotFound()
+
         return JsonResponse(post.to_dict())
 
 
@@ -42,7 +46,11 @@ class RandomCommentView(APIView):
         comments_count = request.GET.get("count", 1)
 
         comment_fetcher = IGCommentFetcher(id, request.connection.ig_token, request.account.id)
-        comments = comment_fetcher.get_random_comments(comments_count)
+        try:
+            comments = comment_fetcher.get_random_comments(comments_count)
+        except ValueError:
+            raise NotFound()
+
         return JsonResponse({"comments": [comment.to_dict() for comment in comments]})
 
 

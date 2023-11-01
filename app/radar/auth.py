@@ -1,11 +1,10 @@
 from typing import Optional, Tuple
 
-from django.utils.translation import gettext_lazy as _
+from rest_framework.exceptions import AuthenticationFailed
+
 from radar.models import Connection
 from rest_framework.request import Request
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import (AuthenticationFailed,
-                                                 InvalidToken)
 from rest_framework_simplejwt.settings import api_settings
 from rest_framework_simplejwt.tokens import Token
 
@@ -18,11 +17,11 @@ class ConnectionJWTAuthentication(JWTAuthentication):
     def authenticate(self, request: Request) -> Optional[Tuple[Connection, Token]]:
         header = self.get_header(request)
         if header is None:
-            return None
+            raise AuthenticationFailed("Authorization header not found")
 
         raw_token = self.get_raw_token(header)
         if raw_token is None:
-            return None
+            raise AuthenticationFailed("Authorization token not found")
 
         validated_token = self.get_validated_token(raw_token)
 
@@ -32,11 +31,11 @@ class ConnectionJWTAuthentication(JWTAuthentication):
         try:
             connection_id = validated_token[api_settings.USER_ID_CLAIM]
         except KeyError:
-            raise InvalidToken(_("Token contained no recognizable connection identification"))
+            raise AuthenticationFailed()
 
         try:
             connection = Connection.objects.get(id = connection_id)
         except self.connection_model.DoesNotExist:
-            raise AuthenticationFailed(_("Connection not found"), code="user_not_found")
+            raise AuthenticationFailed()
 
         return connection

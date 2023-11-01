@@ -1,7 +1,5 @@
 from urllib.parse import urlparse
 
-from rest_framework.exceptions import ValidationError
-
 from radar.utils import build_url, FACEBOOK_API_BASE_URL, make_request, QUERY_HASH, Base
 
 
@@ -34,10 +32,7 @@ class IGPostFetcher:
         url = (f'https://www.instagram.com/graphql/query/?query_hash={QUERY_HASH}'
                f'&variables={{"shortcode": "{self.__shortcode}"}}')
         data = make_request(url)
-        try:
-            return data['data']['shortcode_media']['id']
-        except TypeError:
-            raise ValidationError("Invalid URL.")
+        return data['data']['shortcode_media']['id']
 
     def __get_ig_id(self):
         old_version_id = self.__get_old_ig_id()
