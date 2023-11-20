@@ -33,7 +33,7 @@ class ConnectionTokenObtainSerializer(serializers.Serializer):
         data = super().validate(attrs)
         connection = self.create_connection(data)
         token = self.get_token(connection)
-        return {'access': str(token)}
+        return {'token': str(token), 'user': connection.account.to_dict()}
 
     @staticmethod
     def create_connection(attrs: dict) -> Connection:
