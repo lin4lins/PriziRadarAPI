@@ -5,7 +5,7 @@ from radar.utils import (FACEBOOK_API_BASE_URL, QUERY_HASH, Base, build_url,
 
 
 class Post(Base):
-    def __init__(self, id: str, caption: str, media_url: str, comments_count: str):
+    def __init__(self, id: str, media_url: str, comments_count: str, caption: str = ""):
         self.id = id
         self.caption = caption
         self.media_url = media_url
