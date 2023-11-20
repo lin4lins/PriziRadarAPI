@@ -50,7 +50,7 @@ class RandomCommentView(APIView):
         except ValueError:
             raise NotFound()
 
-        return JsonResponse({"comments": [comment.to_dict() for comment in comments]})
+        return JsonResponse([comment.to_dict() for comment in comments])
 
 
 schema_view = get_schema_view(
