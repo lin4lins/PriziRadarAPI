@@ -46,11 +46,14 @@ class RandomCommentView(APIView):
 
         comment_fetcher = IGCommentFetcher(id, request.connection.ig_token, request.account.id)
         try:
-            comments = comment_fetcher.get_random_comments(comments_count)
+            winners_comments = comment_fetcher.get_random_comments(comments_count)
+            winners = [{'place': place, **winner.to_dict()} for place, winner in
+                       enumerate(winners_comments, 1)]
+
         except ValueError:
             raise NotFound()
 
-        return JsonResponse([comment.to_dict() for comment in comments])
+        return JsonResponse(winners, safe=False)
 
 
 schema_view = get_schema_view(

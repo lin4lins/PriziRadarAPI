@@ -5,8 +5,8 @@ from radar.utils import FACEBOOK_API_BASE_URL, Base, build_url, make_request
 
 class Comment(Base):
     def __init__(self, author_username: str, author_avatar_url: str, text: str):
-        self.author_username = author_username
-        self.author_avatar_url = author_avatar_url
+        self.username = author_username
+        self.avatar_url = author_avatar_url
         self.text = text
 
 
