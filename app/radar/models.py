@@ -15,11 +15,16 @@ class AccountManager(models.Manager):
 
 class Account(models.Model):
     id = models.CharField(primary_key=True, unique=True)
-    name = models.CharField()
     username = models.CharField(unique = True)
     profile_picture_url = models.CharField()
 
     objects = AccountManager()
+
+    def to_dict(self):
+        return {
+            'username': self.username,
+            'profile_picture_url': self.profile_picture_url,
+        }
 
 
 class Connection(models.Model):

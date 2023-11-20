@@ -11,7 +11,7 @@ def get_ig_business_account_url(access_token: str) -> str:
 
 
 def generate_me_details_url(account_id: str, access_token: str) -> str:
-    params = {"fields": "name,username,profile_picture_url", "access_token": access_token}
+    params = {"fields": "username,profile_picture_url", "access_token": access_token}
     return build_url(f"{FACEBOOK_API_BASE_URL}/{account_id}", params)
 
 
