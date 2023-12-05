@@ -23,6 +23,7 @@ def generate_business_discovery_url(username: str, account_id: str, access_token
 def get_account_id(access_token: str) -> str:
     """Get Instagram business account ID."""
     data = make_request(get_ig_business_account_url(access_token))
+    print(data)
     return data["data"][0]["instagram_business_account"]["id"]
 
 

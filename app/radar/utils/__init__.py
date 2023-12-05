@@ -24,6 +24,7 @@ def make_request(url):
         error_type = response.json()['error']['type']
         raise ERROR_TYPES.get(error_type, NotFound(error_type))
 
+    print(response.url)
     return response.json()
 
 
