@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from radar import permissions
@@ -17,6 +17,15 @@ class LogInView(TokenObtainPairView):
     queryset = Connection.objects.all()
     serializer_class = ConnectionTokenObtainSerializer
     permission_classes = [AllowAny]
+
+
+class LogOutView(APIView):
+    authentication_classes = [ConnectionJWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        request.connection.delete()
+        return HttpResponse(status=204)
 
 
 class PostView(APIView):
