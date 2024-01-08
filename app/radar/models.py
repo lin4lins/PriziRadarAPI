@@ -15,7 +15,7 @@ class AccountManager(models.Manager):
 
 class Account(models.Model):
     id = models.CharField(primary_key=True, unique=True)
-    username = models.CharField(unique = True)
+    username = models.CharField(unique=True)
     profile_picture_url = models.CharField()
 
     objects = AccountManager()
@@ -28,5 +28,5 @@ class Account(models.Model):
 
 
 class Connection(models.Model):
-    account = models.ForeignKey(Account, on_delete = models.CASCADE, related_name='connections')
-    ig_token = models.CharField(unique = True)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='connections')
+    ig_token = models.CharField(unique=True)

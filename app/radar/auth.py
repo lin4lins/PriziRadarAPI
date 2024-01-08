@@ -35,7 +35,7 @@ class ConnectionJWTAuthentication(JWTAuthentication):
             raise AuthenticationFailed()
 
         try:
-            connection = Connection.objects.get(id = connection_id)
+            connection = Connection.objects.get(id=connection_id)
         except self.connection_model.DoesNotExist:
             raise AuthenticationFailed()
 

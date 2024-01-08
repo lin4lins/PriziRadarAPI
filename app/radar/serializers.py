@@ -19,8 +19,8 @@ class ConnectionSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         ig_token = validated_data.get('ig_token')
-        account, is_created = Account.objects.get_or_create(ig_token = ig_token)
-        connection = Connection(account = account, **validated_data)
+        account, is_created = Account.objects.get_or_create(ig_token=ig_token)
+        connection = Connection(account=account, **validated_data)
         connection.save()
         return connection
 
@@ -37,8 +37,8 @@ class ConnectionTokenObtainSerializer(serializers.Serializer):
 
     @staticmethod
     def create_connection(attrs: dict) -> Connection:
-        serializer = ConnectionSerializer(data = attrs)
-        serializer.is_valid(raise_exception = True)
+        serializer = ConnectionSerializer(data=attrs)
+        serializer.is_valid(raise_exception=True)
         return serializer.save()
 
     @classmethod

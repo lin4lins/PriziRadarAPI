@@ -13,7 +13,7 @@ class Post(Base):
 
 
 class IGPostFetcher:
-    def __init__(self, account_id: str, access_token: str, url = None):
+    def __init__(self, account_id: str, access_token: str, url=None):
         self.__account_id = account_id
         self.__access_token = access_token
         self.__url = url
